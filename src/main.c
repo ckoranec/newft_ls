@@ -69,18 +69,30 @@ void            addnode(t_node **head, char *path, char *name)
 void  useadir(t_node **dirlist, char flags)
 {
 	DIR *dir;
+	t_stat temp;
 	t_dirant *dp;
 	t_node *files;
 	t_node *originaldir;
 	files = 0;
 	originaldir = *dirlist;
 	if (!(dir = opendir((*dirlist)->fullname)))
-		return ;
-	while((dp = readdir (dir)) != NULL)
-		addnode(&files, (*dirlist)->fullname, dp->d_name);
+	{
+		if ((lstat((*dirlist)->fullname, &temp) == 0) && !(S_ISDIR(temp.st_mode)))
+			addnode(&files, (*dirlist)->fullname, (*dirlist)->name);
+		else
+		{
+			printf("ls: %s: %s\n", (*dirlist)->fullname, strerror(errno));
+			if (strcmp(strerror(errno), "Permission denied") == 0)
+				return ;
+		}
+	}
+	else
+		while((dp = readdir (dir)) != NULL)
+			addnode(&files, (*dirlist)->fullname, dp->d_name);
 	files = *(mergesort_list(&files, flags));
 	printit(dirlist, files, flags);
-	closedir(dir);
+	if (dir)
+		closedir(dir);
 	*dirlist = originaldir;
 }
 
