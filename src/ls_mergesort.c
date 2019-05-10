@@ -4,7 +4,9 @@ int     sortbyflag(char flags, t_node *a, t_node *b)
 {
 	if (flags)
 		;
-    if (ft_strcmp(a->name, b->name) < 0)
+	if (flags & 0x1)
+		return (ft_strcmp(a->name, b->name) > 0 ? 1 : 0);
+    else if (ft_strcmp(a->name, b->name) < 0)
         return (1);
     return (0);
 }

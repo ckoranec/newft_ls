@@ -1,4 +1,87 @@
 #include "../includes/ft_ls.h"
+
+void	printftype(t_node *files)
+{
+	char			t;
+
+	t = '-';
+	t = S_ISDIR(files->data.st_mode) ? 'd' : t;
+	t = S_ISSOCK(files->data.st_mode) ? 's' : t;
+	t = S_ISBLK(files->data.st_mode) ? 'b' : t;
+	t = S_ISFIFO(files->data.st_mode) ? 'p' : t;
+	t = S_ISLNK(files->data.st_mode) ? 'l' : t;
+	printf("%c", t);
+}
+
+void	printpermissions(t_node *files)
+{
+	printftype(files);
+	printf((files->data.st_mode & S_IRUSR) ? "r" : "-");
+	printf((files->data.st_mode & S_IWUSR) ? "w" : "-");
+	if (files->data.st_mode & S_ISUID)
+		printf((files->data.st_mode & S_IXUSR) ? "S" : "s");
+	else
+		printf((files->data.st_mode & S_IXUSR) ? "x" : "-");
+	printf((files->data.st_mode & S_IRGRP) ? "r" : "-");
+	printf((files->data.st_mode & S_IWGRP) ? "w" : "-");
+	if (files->data.st_mode & S_ISGID)
+		printf((files->data.st_mode & S_IXGRP) ? "S" : "s");
+	else
+		printf((files->data.st_mode & S_IXGRP) ? "x" : "-");
+	printf((files->data.st_mode & S_IROTH) ? "r" : "-");
+	printf((files->data.st_mode & S_IWOTH) ? "w" : "-");
+	if (files->data.st_mode & S_ISVTX)
+		printf((files->data.st_mode & S_IXOTH) ? "t" : "T");
+	else
+		printf((files->data.st_mode & S_IXOTH) ? "x" : "-");
+}
+
+void	printxattr(t_node *files)
+{
+	acl_t				acl;
+	acl_entry_t			entry;
+
+	acl = acl_get_link_np(files->fullname, ACL_TYPE_EXTENDED);
+	if (acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &entry) == -1)
+	{
+		acl_free(acl);
+		acl = 0;
+	}
+	if (listxattr(files->fullname, 0, 0, XATTR_NOFOLLOW) > 0)
+		printf("@ ");
+	else if (acl != 0)
+		printf("+ ");
+	else
+		printf("  ");
+	if (acl)
+		acl_free(acl);
+}
+
+void	printl(t_node *files)
+{
+	struct group	*grp;
+	struct passwd	*pwd;
+	char			buf[_POSIX_SYMLINK_MAX + 1];
+
+	if (ft_strcmp(files->name, "") == 0)
+		return ;
+	grp = getgrgid(files->data.st_gid);
+	pwd = getpwuid(files->data.st_uid);
+	printpermissions(files);
+	printxattr(files);
+	printf("%3hu ", files->data.st_nlink);
+	printf("%-10s %-7s", pwd->pw_name, grp->gr_name);
+	printf(" %7lld ", files->data.st_size);
+	if (S_ISLNK(files->data.st_mode))
+	{
+		ft_bzero(buf, _POSIX_SYMLINK_MAX + 1);
+		if (readlink(files->fullname, buf, _POSIX_SYMLINK_MAX) > 0)
+			printf("%s -> %s\n", files->name, buf);
+	}
+	else
+		printf("%s\n", files->name);
+}
+
 void  addtodirs(t_node **dirlist, t_node *files)
 {
 	t_node *new;
@@ -16,7 +99,6 @@ void  addtodirs(t_node **dirlist, t_node *files)
 
 void  printit(t_node **dirlist, t_node *files, char flags)
 {
-	printf("%s:\n", files->path);
 	while (files)
 	{
 		if (!(flags & 0x10) && (files->name)[0] == '.')
@@ -24,12 +106,14 @@ void  printit(t_node **dirlist, t_node *files, char flags)
 			files = files->next;
 			continue ;
 		}
-		if ((flags & 0x2) && files->isdir == true && ft_strcmp(files->name, ".") != 0 && ft_strcmp(files->name, "..") != 0)
+		if ((flags & 0x2) && files->isdir && ft_strcmp(files->name, ".") != 0 && ft_strcmp(files->name, "..") != 0)
 			addtodirs(dirlist, files);
-		printf("%s\n", files->name);
+		if (flags & 0x4)
+			printl(files);
+		else
+			printf("%s\n", files->name);
 		files = files->next;
 	}
-	printf("\n");
 }
 
 char          *makepath(char *s1, char *s2)
@@ -72,38 +156,43 @@ void  useadir(t_node **dirlist, char flags)
 	t_stat temp;
 	t_dirant *dp;
 	t_node *files;
-	t_node *originaldir;
+	t_node *copyofdirlist;
 	files = 0;
-	originaldir = *dirlist;
+	copyofdirlist = *dirlist;
 	if (!(dir = opendir((*dirlist)->fullname)))
 	{
 		if ((lstat((*dirlist)->fullname, &temp) == 0) && !(S_ISDIR(temp.st_mode)))
 			addnode(&files, (*dirlist)->fullname, (*dirlist)->name);
 		else
 		{
-			printf("ls: %s: %s\n", (*dirlist)->fullname, strerror(errno));
-			if (strcmp(strerror(errno), "Permission denied") == 0)
+			printf("ft_ls: %s: %s\n", (*dirlist)->fullname, strerror(errno));
+			if (ft_strcmp(strerror(errno), "Permission denied") == 0)
 				return ;
 		}
 	}
 	else
-		while((dp = readdir (dir)) != NULL)
+		while((dp = readdir(dir)) != NULL)
 			addnode(&files, (*dirlist)->fullname, dp->d_name);
-	files = *(mergesort_list(&files, flags));
-	printit(dirlist, files, flags);
+	mergesort_list(&files, flags);
+	printit(&copyofdirlist, files, flags);
 	if (dir)
 		closedir(dir);
-	*dirlist = originaldir;
 }
 
 void usedirs(t_node **dirlist, char flags)
 {
+	//char	single;
 	t_node *top;
 	top = *dirlist;
+	//single = (*dirlist)->next ? 0 : 1;
 	while (*dirlist)
 	{
+		//if (!single)
+		printf("%s:\n", (*dirlist)->fullname);
 		useadir(dirlist, flags);
 		*dirlist = (*dirlist)->next;
+		if (*dirlist)
+			printf("\n");
 	}
 }
 

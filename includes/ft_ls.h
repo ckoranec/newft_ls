@@ -15,6 +15,7 @@
 # include <errno.h>
 # include <dirent.h>
 # include <sys/acl.h>
+# include <limits.h>
 
 typedef struct stat t_stat;
 typedef struct dirent t_dirant;
