@@ -57,6 +57,18 @@ void	printxattr(t_node *files)
 		acl_free(acl);
 }
 
+void			print_time(t_node *file)
+{
+	char		*modtime;
+
+	modtime = ctime(&(file->data.st_mtime));
+	if (((time(NULL) - file->data.st_mtime) >= 15724800) ||
+		((time(NULL) - file->data.st_mtime) <= -15724800))
+		printf("%.6s  %.4s ", (modtime + 4), (modtime + 20));
+	else
+		printf("%.6s %.5s ", (modtime + 4), (modtime + 11));
+}
+
 void	printl(t_node *files)
 {
 	struct group	*grp;
@@ -72,6 +84,7 @@ void	printl(t_node *files)
 	printf("%3hu ", files->data.st_nlink);
 	printf("%-10s %-7s", pwd->pw_name, grp->gr_name);
 	printf(" %7lld ", files->data.st_size);
+	print_time(files);
 	if (S_ISLNK(files->data.st_mode))
 	{
 		ft_bzero(buf, _POSIX_SYMLINK_MAX + 1);
