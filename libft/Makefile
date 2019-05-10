@@ -44,7 +44,7 @@ ft_intlen.o  ft_longint.o
 all: $(NAME)
 
 $(NAME): $(SRCS)
-	gcc -Wall -Wextra -Werror -I includes -c $(SRCS)
+	gcc -Wall -Wextra -Werror -g -I includes -c $(SRCS)
 	ar rc $(NAME) $(OBJ)
 
 clean:

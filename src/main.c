@@ -10,6 +10,7 @@ void	printftype(t_node *files)
 	t = S_ISBLK(files->data.st_mode) ? 'b' : t;
 	t = S_ISFIFO(files->data.st_mode) ? 'p' : t;
 	t = S_ISLNK(files->data.st_mode) ? 'l' : t;
+	t = S_ISCHR(files->data.st_mode) ? 'c' : t;
 	printf("%c", t);
 }
 
@@ -69,6 +70,14 @@ void			print_time(t_node *file)
 		printf("%.6s %.5s ", (modtime + 4), (modtime + 11));
 }
 
+void	print_size(t_node *files)
+{
+	if (S_ISBLK(files->data.st_mode) || S_ISCHR(files->data.st_mode))
+		printf(" %d, %d ", major(files->data.st_rdev), minor(files->data.st_rdev));
+	else
+		printf(" %7lld ", files->data.st_size);
+}
+
 void	printl(t_node *files)
 {
 	struct group	*grp;
@@ -83,7 +92,7 @@ void	printl(t_node *files)
 	printxattr(files);
 	printf("%3hu ", files->data.st_nlink);
 	printf("%-10s %-7s", pwd->pw_name, grp->gr_name);
-	printf(" %7lld ", files->data.st_size);
+	print_size(files);
 	print_time(files);
 	if (S_ISLNK(files->data.st_mode))
 	{
@@ -110,8 +119,34 @@ void  addtodirs(t_node **dirlist, t_node *files)
 	*dirlist = new;
 }
 
+void				printblocksize(t_node *file, char flags)
+{
+	size_t			size;
+	int				lstsize;
+
+	lstsize = 0;
+	size = 0;
+	while (file)
+	{
+		if (!(flags & 0x10) && (file->name)[0] == '.')
+		{
+			file = file->next;
+			continue ;
+		}
+		if (file)
+		{
+			lstsize += 1;
+			size += file->data.st_blocks;
+			file = file->next;
+		}
+	}
+	if (lstsize > 1)
+		printf("total %zu\n", size);
+}
+
 void  printit(t_node **dirlist, t_node *files, char flags)
 {
+	printblocksize(files, flags);
 	while (files)
 	{
 		if (!(flags & 0x10) && (files->name)[0] == '.')
@@ -163,6 +198,21 @@ void            addnode(t_node **head, char *path, char *name)
 	*head = new;
 }
 
+void	freeit(t_node **files)
+{
+	t_node *temp;
+	while (*files)
+	{
+		temp = *files;
+		*files = (*files)->next;
+		temp->next = NULL;
+		ft_strdel(&(temp->name));
+		ft_strdel(&(temp->path));
+		ft_strdel(&(temp->fullname));
+		free(temp);
+	}
+}
+
 void  useadir(t_node **dirlist, char flags)
 {
 	DIR *dir;
@@ -188,6 +238,7 @@ void  useadir(t_node **dirlist, char flags)
 			addnode(&files, (*dirlist)->fullname, dp->d_name);
 	mergesort_list(&files, flags);
 	printit(&copyofdirlist, files, flags);
+	freeit(&files);
 	if (dir)
 		closedir(dir);
 }
@@ -195,16 +246,16 @@ void  useadir(t_node **dirlist, char flags)
 void usedirs(t_node **dirlist, char flags)
 {
 	//char	single;
-	t_node *top;
-	top = *dirlist;
+	t_node *cpy;
+	cpy = *dirlist;
 	//single = (*dirlist)->next ? 0 : 1;
-	while (*dirlist)
+	while (cpy)
 	{
-		//if (!single)
-		printf("%s:\n", (*dirlist)->fullname);
-		useadir(dirlist, flags);
-		*dirlist = (*dirlist)->next;
-		if (*dirlist)
+		if (cpy->next)
+			printf("%s:\n", cpy->fullname);
+		useadir(&cpy, flags);
+		cpy = cpy->next;
+		if (cpy)
 			printf("\n");
 	}
 }
@@ -265,5 +316,6 @@ int main (int ac, char **av)
 	if((flags = parse(av,&dirlist)) == -1 && ac)
 		return(0);
 	usedirs(&dirlist, flags);
+	freeit(&dirlist);
 	return(0);
 }
