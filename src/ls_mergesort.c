@@ -1,9 +1,36 @@
 #include "../includes/ft_ls.h"
 
+int		sorttime(t_node *a, t_node *b)
+{
+	if ((a->data.st_mtimespec.tv_sec) < (b->data.st_mtimespec.tv_sec))
+		return (1);
+	if ((a->data.st_mtimespec.tv_sec) == (b->data.st_mtimespec.tv_sec))
+	{
+		if ((a->data.st_mtimespec.tv_nsec)
+			< (b->data.st_mtimespec.tv_nsec))
+		{
+			return (1);
+		}
+		else if ((a->data.st_mtimespec.tv_nsec)
+			== (b->data.st_mtimespec.tv_nsec))
+		{
+			if (ft_strcmp(a->name, b->name) > 0)
+				return (1);
+		}
+	}
+	return (0);
+}
+
 int     sortbyflag(char flags, t_node *a, t_node *b)
 {
 	if (flags)
 		;
+	if (flags & 0x8)
+	{
+		if (flags & 0x1)
+			return (sorttime(a, b));
+		return (sorttime(b, a));
+	}
 	if (flags & 0x1)
 		return (ft_strcmp(a->name, b->name) > 0 ? 1 : 0);
     else if (ft_strcmp(a->name, b->name) < 0)
