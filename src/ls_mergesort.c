@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ls_mergesort.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jkertgat <jkertgat@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/05/18 05:14:08 by jkertgat          #+#    #+#             */
+/*   Updated: 2019/05/18 05:14:29 by jkertgat         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/ft_ls.h"
 
 int		sorttime(t_node *a, t_node *b)
@@ -21,7 +33,7 @@ int		sorttime(t_node *a, t_node *b)
 	return (0);
 }
 
-int     sortbyflag(char flags, t_node *a, t_node *b)
+int		sortbyflag(char flags, t_node *a, t_node *b)
 {
 	if (flags)
 		;
@@ -33,9 +45,9 @@ int     sortbyflag(char flags, t_node *a, t_node *b)
 	}
 	if (flags & 0x1)
 		return (ft_strcmp(a->name, b->name) > 0 ? 1 : 0);
-    else if (ft_strcmp(a->name, b->name) < 0)
-        return (1);
-    return (0);
+	else if (ft_strcmp(a->name, b->name) < 0)
+		return (1);
+	return (0);
 }
 
 t_node		*sortedmerge_list(t_node *a, t_node *b, char flags)

@@ -1,6 +1,6 @@
 NAME = ft_ls
 
-SRC = main.c ls_mergesort.c
+SRC = parseandstuff.c print2.c  print.c main.c ls_mergesort.c
 
 OBJ = $(SRC:.c=.o)
 
@@ -17,7 +17,7 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@make -C libft
-	@gcc $(FLAGS) $(INC) $(OBJ) libft/libft.a -o $(NAME)
+	@gcc $(FLAGS) $(INC) $(OBJ) libft/libft.a ft_printf/ft_printf.a -o $(NAME)
 
 $(OBJ):
 	@$(CC) $(FLAGS) -c $(SRC_POS)
