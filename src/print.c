@@ -65,9 +65,16 @@ void print_time(t_node *file)
   modtime = ctime(&(file->data.st_mtime));
   if (((time(NULL) - file->data.st_mtime) >= 15724800) ||
       ((time(NULL) - file->data.st_mtime) <= -15724800))
-    ft_printf("%.6s  %.4s ", (modtime + 4), (modtime + 20));
+    {
+         write(1, modtime + 4, 7);
+  write(1, modtime + 20, 4);
+    }
   else
-    ft_printf("%.6s %.5s ", (modtime + 4), (modtime + 11));
+ {
+write(1, modtime + 4, 12);
+  //  ft_printf("%.6s ", (modtime + 4));
+ }
+ write(1, " ",1);
 }
 
 void print_size(t_node *files)

@@ -36,7 +36,7 @@ typedef struct      s_node
 }                   t_node;
 
 int     sortbyflag(char flags, t_node *a, t_node *b);
-t_node**mergesort_list(t_node **list, char flags);
+t_node **mergesort_list(t_node **list, char flags);
 void printftype(t_node *files);
 void printpermissions(t_node *files);
 void printxattr(t_node *files);

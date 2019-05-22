@@ -68,7 +68,6 @@ void usedirs(t_node **dirlist, char flags)
   cpy = *dirlist;
   while (cpy)
     {
-      if (cpy->next)
 	ft_printf("%s:\n", cpy->fullname);
       useadir(&cpy, flags);
       cpy = cpy->next;
@@ -87,5 +86,7 @@ int main(int ac, char **av)
     return (0);
   usedirs(&dirlist, flags);
   freeit(&dirlist);
+  while(1)
+    ;
   return (0);
 }
