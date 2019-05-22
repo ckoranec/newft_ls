@@ -23,7 +23,7 @@ OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
 $(NAME): $(SRC)
-	@gcc -Wall -Wextra -Werror -I includes -c $(SRC)
+	@gcc -Wall -Wextra -Werror -I includes -c $(SRC) -g
 	ar rc $(NAME) $(OBJ) ../*.o
 
 clean:

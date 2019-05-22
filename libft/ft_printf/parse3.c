@@ -27,6 +27,7 @@ void	parse5_2(t_lenmod *lenmod, int i, const char *s, int strpos)
 		j++;
 	}
 	lenmod->zeronumber = ft_atoi(str);
+	free(str);
 }
 
 void	parse5(const char *s, t_lenmod *lenmod, int strpos, int i)
@@ -50,6 +51,7 @@ void	parse5(const char *s, t_lenmod *lenmod, int strpos, int i)
 		}
 		lenmod->minusnumber = ft_atoi(str);
 	}
+	free(str);
 }
 
 void	parse6(t_lenmod *lenmod, t_varg *varg, const char *s, int i)
@@ -106,4 +108,5 @@ void	parse7(t_lenmod *lenmod, const char *s, int i, int strpos)
 		lenmod->alen = ft_atoi(str);
 		i = j - 1;
 	}
+	free(str);
 }

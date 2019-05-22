@@ -14,7 +14,8 @@
 
 int		print_u_too(t_lenmod *lenmod, intmax_t num)
 {
-	int i;
+	int		i;
+	char	*str;
 
 	if (lenmod->zero == 1)
 	{
@@ -25,7 +26,8 @@ int		print_u_too(t_lenmod *lenmod, intmax_t num)
 			i++;
 		}
 	}
-	ft_putstr(ft_ultoa_base(num, 10));
+	ft_putstr(str = ft_ultoa_base(num, 10));
+	free(str);
 	if (lenmod->minus == 1)
 	{
 		i = ft_intlen(num);
@@ -41,6 +43,8 @@ int		print_u_too(t_lenmod *lenmod, intmax_t num)
 int		print_u(t_varg *varg, t_lenmod *lenmod, va_list ap)
 {
 	intmax_t	num;
+	int			ret;
+	char		*str;
 
 	if (lenmod->l == 1 || lenmod->ll == 1)
 		num = (lenmod->l == 1) ? (unsigned long)va_arg(ap, intmax_t)
@@ -53,15 +57,16 @@ int		print_u(t_varg *varg, t_lenmod *lenmod, va_list ap)
 		num = (size_t)va_arg(ap, intmax_t);
 	else
 		num = (unsigned int)va_arg(ap, int);
+	str = ft_ultoa_base(num, 10);
+	ret = ft_strlen(str);
 	if (lenmod->blen < 0 || lenmod->alen < 0)
 		cheese(varg, lenmod, num, NULL);
 	if (lenmod->plus == 1 && num > 0)
-	{
 		ft_putchar('+');
-		return (ft_strlen(ft_ultoa_base(num, 10)) + 1);
-	}
-	print_u_too(lenmod, num);
-	return (ft_strlen(ft_ultoa_base(num, 10)));
+	else
+		print_u_too(lenmod, num);
+	free(str);
+	return (((lenmod->plus == 1 && num > 0) ? 1 : 0) + ret);
 }
 
 int		print_bigs(va_list ap)
@@ -99,7 +104,8 @@ int		print_d_i_too(t_lenmod *lenmod, intmax_t num, va_list ap)
 
 int		print_d_i_plus(intmax_t num, t_lenmod *lenmod)
 {
-	int i;
+	int		i;
+	char	*str;
 
 	i = 0;
 	if (num > 0)
@@ -115,6 +121,8 @@ int		print_d_i_plus(intmax_t num, t_lenmod *lenmod)
 			i++;
 		}
 	}
-	ft_putstr(ft_itoa_base((num > 0) ? num : -num, 10));
+	str = ft_itoa_base((num > 0) ? num : -num, 10);
+	ft_putstr(str);
+	free(str);
 	return (ft_intlen((num > 0) ? num : -num) + 1 + i);
 }

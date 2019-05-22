@@ -114,4 +114,5 @@ void	parse4(t_lenmod *lenmod, const char *s, int strpos, int i)
 		}
 		lenmod->zeronumber = ft_atoi(str);
 	}
+	free(str);
 }

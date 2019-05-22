@@ -109,9 +109,14 @@ int		print_p(va_list ap)
 
 int		print_bigd(va_list ap)
 {
-	long long num;
+	long long	num;
+	char		*str;
+	int			ret;
 
 	num = va_arg(ap, long long);
 	ft_longint(num);
-	return (ft_strlen(ft_itoa_base(num, 10)));
+	str = ft_itoa_base(num, 10);
+	ret = ft_strlen(str);
+	free(str);
+	return (ret);
 }

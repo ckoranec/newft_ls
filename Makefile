@@ -23,11 +23,11 @@ $(OBJ):
 	@$(CC) $(FLAGS) -c $(SRC_POS)
 
 clean:
-	@make clean -C libft
+	make clean -C libft
 	@rm -f $(OBJ)
 
 fclean: clean
-	@make fclean -C libft
+	make fclean -C libft
 	@rm -f $(NAME)
 
 re: fclean all
