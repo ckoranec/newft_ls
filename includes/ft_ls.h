@@ -3,7 +3,7 @@
 # define FT_LS_H
 
 # include "../libft/libft.h"
-# include "../ft_printf/ft_printf.h"
+
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <unistd.h>

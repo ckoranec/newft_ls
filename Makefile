@@ -16,8 +16,8 @@ FLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@make -C libft
-	@gcc $(FLAGS) $(INC) $(OBJ) libft/libft.a ft_printf/ft_printf.a -o $(NAME)
+	make -C libft
+	@gcc $(FLAGS) $(INC) $(OBJ) libft/libft.a -o $(NAME)
 
 $(OBJ):
 	@$(CC) $(FLAGS) -c $(SRC_POS)

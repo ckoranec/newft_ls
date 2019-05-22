@@ -10,7 +10,7 @@
 #                                                                              #
 #******************************************************************************#
 
-SRCS += ft_lstmap.c ft_striter.c ft_strsplit.c ft_atoi.c ft_lstnew.c \
+SRC = ft_lstmap.c ft_striter.c ft_strsplit.c ft_atoi.c ft_lstnew.c \
 ft_putendl_fd.c ft_striteri.c ft_bzero.c ft_memalloc.c ft_putnbr.c \
 ft_strjoin.c ft_strstr.c ft_isalnum.c ft_memccpy.c ft_putnbr_fd.c ft_strlcat.c \
 ft_strsub.c ft_isalpha.c ft_memchr.c ft_putstr.c ft_strlen.c ft_strtrim.c \
@@ -25,32 +25,22 @@ ft_intlen.c  ft_longint.c
 
 NAME := libft.a
 
-OBJ += ft_lstmap.o ft_striter.o ft_strsplit.o ft_atoi.o ft_lstnew.o \
-ft_putendl_fd.o ft_striteri.o ft_bzero.o ft_memalloc.o ft_putnbr.o \
-ft_strjoin.o ft_strstr.o ft_isalnum.o ft_memccpy.o ft_putnbr_fd.o ft_strlcat.o \
-ft_strsub.o ft_isalpha.o ft_memchr.o ft_putstr.o ft_strlen.o ft_strtrim.o \
-ft_isascii.o ft_memcmp.o ft_putstr_fd.o ft_strmap.o ft_swap.o ft_isdigit.o \
-ft_memcpy.o ft_strcat.o ft_strmapi.o ft_tolower.o ft_isprint.o ft_memdel.o \
-ft_strchr.o ft_strncat.o ft_toupper.o ft_isspace.o ft_memmove.o ft_strclr.o \
-ft_strncmp.o ft_wordcnt.o ft_itoa.o ft_memset.o ft_strcmp.o ft_strncpy.o \
-ft_lstadd.o ft_num_len.o ft_strcpy.o ft_strnequ.o ft_lstdel.o ft_putchar.o \
-ft_strdel.o ft_strnew.o ft_lstdelone.o ft_putchar_fd.o ft_strdup.o ft_strnstr.o \
-ft_lstiter.o ft_putendl.o ft_strequ.o ft_strrchr.o ft_itoa_base.o ft_strrev.o \
-ft_intlen.o  ft_longint.o
+OBJ = $(SRC:.c=.o)
 
 .PHONY:
 	clean fclean re
 
 all: $(NAME)
 
-$(NAME): $(SRCS)
-	gcc -Wall -Wextra -Werror -g -I includes -c $(SRCS)
-	ar rc $(NAME) $(OBJ)
+$(NAME): $(SRC)
+	@gcc -Wall -Wextra -Werror -g -I includes -c $(SRC)
+	make -C ft_printf
 
 clean:
-	/bin/rm -f $(OBJ)
+	@/bin/rm -f $(OBJ)
+	make clean -C ft_printf
 
 fclean: clean
-	/bin/rm -rf $(NAME)
+	make fclean -C ft_printf
 
 re: fclean all
