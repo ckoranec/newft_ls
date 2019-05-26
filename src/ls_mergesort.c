@@ -12,7 +12,7 @@
 
 #include "../includes/ft_ls.h"
 
-int		sorttime(t_node *a, t_node *b)
+int			sorttime(t_node *a, t_node *b)
 {
 	if ((a->data.st_mtimespec.tv_sec) < (b->data.st_mtimespec.tv_sec))
 		return (1);
@@ -33,7 +33,7 @@ int		sorttime(t_node *a, t_node *b)
 	return (0);
 }
 
-int		sortbyflag(char flags, t_node *a, t_node *b)
+int			sortbyflag(char flags, t_node *a, t_node *b)
 {
 	if (flags)
 		;

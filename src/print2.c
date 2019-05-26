@@ -9,12 +9,12 @@
 /*   Updated: 2019/05/18 05:48:00 by jkertgat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../includes/ft_ls.h"
 
-
-void printftype(t_node *files)
+void	printftype(t_node *files)
 {
-	char t;
+	char	t;
 
 	t = '-';
 	t = S_ISDIR(files->data.st_mode) ? 'd' : t;
@@ -26,7 +26,7 @@ void printftype(t_node *files)
 	ft_printf("%c", t);
 }
 
-void printpermissions(t_node *files)
+void	printpermissions(t_node *files)
 {
 	printftype(files);
 	ft_printf((files->data.st_mode & S_IRUSR) ? "r" : "-");
@@ -49,18 +49,17 @@ void printpermissions(t_node *files)
 		ft_printf((files->data.st_mode & S_IXOTH) ? "x" : "-");
 }
 
-
-void printxattr(t_node *files)
+void	printxattr(t_node *files)
 {
-	acl_t acl;
-	acl_entry_t entry;
+	acl_t		acl;
+	acl_entry_t	entry;
 
 	acl = acl_get_link_np(files->fullname, ACL_TYPE_EXTENDED);
 	if (acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &entry) == -1)
-		{
-			acl_free(acl);
-			acl = 0;
-		}
+	{
+		acl_free(acl);
+		acl = 0;
+	}
 	if (listxattr(files->fullname, 0, 0, XATTR_NOFOLLOW) > 0)
 		ft_printf("@ ");
 	else if (acl != 0)
